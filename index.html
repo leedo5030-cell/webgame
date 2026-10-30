@@ -3582,7 +3582,7 @@ function renderPlayer(){
 }
 /* 오른쪽 아래: 뽑을 카드 · 버린 카드 · 소멸 · 계산 로그 · 턴 종료 */
 function pilesHTML(C,label,dis,onEnd){
-  $('#piles').innerHTML=`<div class="pcol"><div class="pilex">${S.screen==='combat'&&canFlee()?`<button class="plate-btn" id="pFlee" ${dis?'disabled':''}>도망치기</button>`:''}<button class="plate-btn" id="pExh">소멸 ${C.exh.length}</button>${C.log?'<button class="plate-btn" id="pLog">계산 로그</button>':''}${S.screen==='combat'&&S.run&&((S.run.equip||[]).length||C.tempEq)?`<button class="plate-btn" id="pEq">장비${C.spinArm||C.flaskArm?' ●':''}${C.plank?' · 판자 1':''}</button>`:''}</div>
+  $('#piles').innerHTML=`<div class="pcol"><div class="pilex">${S.screen==='combat'?`<button class="plate-btn" id="pFlee" ${dis||!canFlee()?'disabled':''} title="${canFlee()?'1턴을 쓰고 주사위로 도망친다':'정예·보스 전투에서는 도망칠 수 없다'}">도망치기</button>`:''}<button class="plate-btn" id="pExh">소멸 ${C.exh.length}</button>${C.log?'<button class="plate-btn" id="pLog">계산 로그</button>':''}${S.screen==='combat'&&S.run&&((S.run.equip||[]).length||C.tempEq)?`<button class="plate-btn" id="pEq">장비${C.spinArm||C.flaskArm?' ●':''}${C.plank?' · 판자 1':''}</button>`:''}</div>
     <div class="pilegrp"><button class="pile" id="pDraw">뽑을 카드<b>${C.draw.length}</b></button><button class="pile" id="pDisc">버린 카드<b>${C.disc.length}</b></button></div></div>
     <button id="endTurn" ${dis?'disabled':''}>${label}</button>`;
   $('#pDraw').onclick=()=>openList('뽑을 카드 더미',[...C.draw].sort(deckSort),'순서는 섞여 있습니다');
