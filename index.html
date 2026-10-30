@@ -720,16 +720,7 @@ button:focus-visible{outline:3px solid var(--brass-hi);outline-offset:3px}
 
 <script>
 /* 배경 그림 (사용자가 뽑은 그림) — 마을 길 4장: 인트로·타이틀 반복, 성전 앞·성전 안: 전투, 모닥불·노점: 휴식·상점 */
-const BGIMG={
-  road1:'assets/bg_road1.webp',
-  road2:'assets/bg_road2.webp',
-  road3:'assets/bg_road3.webp',
-  road4:'assets/bg_road4.webp',
-  front:'assets/bg_front.webp',
-  inside:'assets/bg_inside.webp',
-  rest:'assets/bg_rest.webp',
-  shop:'assets/bg_shop.webp'
-};
+const BGIMG={};/* 그림 배경 미사용 — 이전 단조로운 배경(세계수·재 내리는 미드가르드)으로 되돌림 */
 </script>
 
 <script>
@@ -1087,16 +1078,9 @@ function knightCheck(){
 /* 적 그림 — 에셋이 생기면 ENEMY_IMG에 이미지 주소(또는 data: URI)를 넣으면 그 그림으로 바뀜 */
 const ENEMY_IMG={/* priest:'data:image/png;base64,...' */};
 /* 순수유물주의자 에셋 (사용자 제공 시트) — 몸은 그대로, 얼굴(표정 모음 8종)만 바뀜 */
-const BISHOP_BODY='assets/bishop_body.webp';
+const BISHOP_BODY='';
 /* 표정 패치: 몸 그림 얼굴 위치(146,64)~(222,128)에 겹침 */
-const BISHOP_FACE={neutral:'assets/face_neutral.webp',
-annoyed:'assets/face_annoyed.webp',
-mad:'assets/face_mad.webp',
-blank:'assets/face_blank.webp',
-zealot:'assets/face_zealot.webp',
-hurt1:'assets/face_hurt1.webp',
-hurt2:'assets/face_hurt2.webp',
-despair:'assets/face_despair.webp'};
+const BISHOP_FACE={};
 /* 표정 바꾸는 시점 (임시 배치):
    기본 — 페이즈 1 무표정 / 페이즈 2 광기 / 페이즈 3 광신도, 체력 30% 이하(페이즈 1·2)는 피격(중상)
    대사가 나오면 그 대사에 맞는 표정, 피해를 받으면 잠깐 피격(경미) — 최대 체력 10% 이상이면 피격(중상) */
@@ -1404,7 +1388,7 @@ function emberFx(g,t,cx,cy,W,H,k=1){
 /* 인트로: 마을 길 4장을 차례로 다가가며 보여 주고, 마지막 장이 타이틀 반복 화면이 됨 */
 const INTRO_SEQ=['road1','road2','road4','road3'],INTRO_SEG=3200,INTRO_FADE=1100;
 function startIntro(done){
-  if(REDUCED){done();return}
+  {done();return}
   VIEW.intro={t0:performance.now(),done};S.bg='view';
 }
 function drawIntro(g,t,W,H){
@@ -1422,9 +1406,9 @@ function endIntro(){const I=VIEW.intro;if(!I)return;VIEW.intro=null;VIEW.key='ro
 /* 등반 중 배경 — 1~19칸 동안 점점 다가감 */
 const climbZ=(lo,hi)=>{const f=S.run?clamp((S.run.floor||0)/29,0,1):0;return lo+(hi-lo)*f};
 function viewFor(kind){
-  if(kind==='title')return setView('road3',1.05,{loop:true,dur:0});
+  if(kind==='title'){setBG('tree');return}
   if(S.run&&S.run.act===2){S.bg='nida';if(REDUCED)drawBG(performance.now());return}
-  if(kind==='map')return setView('road3',climbZ(1,1.3));
+  setBG('midgard');return;
   if(kind==='combat'){const E=S.C&&S.C.E,port=S.orient==='port',o=port?{region:860}:{lift:999};/* 가로: 그림 아랫단을 화면 아랫단에 맞춰 바닥선을 패 위로 올림 */
     if(E&&E.boss)return setView('inside',port?1.06:1.26,{from:port?1.14:1.34,dur:1600,...o});return setView('front',port?climbZ(1.02,1.24):climbZ(1.25,1.42),o)}
   if(kind==='rest')return setView('rest',1.04,{from:1,dur:2400});
@@ -3534,7 +3518,7 @@ function intentHTML(){
 function renderEnemy(){
   const C=S.C,E=C.E;
   const art=$('#eart');
-  if(art.dataset.k!==E.key){art.dataset.k=E.key;art.classList.toggle('still',E.key==='bishop');art.innerHTML=E.key==='bishop'?`<div class="bwrap"><img class="bbody" alt="${E.name}" src="${BISHOP_BODY}"><img class="bface" alt="" src="${BISHOP_FACE.neutral}" data-f="neutral"></div>`:ENEMY_IMG[E.key]?`<img alt="${E.name}" src="${ENEMY_IMG[E.key]}">`:(ENEMY_SVG[ENEMY[E.key].art]||a2SVG(ENEMY[E.key].art))}
+  if(art.dataset.k!==E.key){art.dataset.k=E.key;art.classList.toggle('still',false);art.innerHTML=false?`<div class="bwrap"><img class="bbody" alt="${E.name}" src="${BISHOP_BODY}"><img class="bface" alt="" src="${BISHOP_FACE.neutral}" data-f="neutral"></div>`:ENEMY_IMG[E.key]?`<img alt="${E.name}" src="${ENEMY_IMG[E.key]}">`:(ENEMY_SVG[ENEMY[E.key].art]||a2SVG(ENEMY[E.key].art))}
   bishopFace();
   $('#intent').innerHTML=C.over?'':intentHTML();
   const chips=[];
