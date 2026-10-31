@@ -215,6 +215,7 @@ img{-webkit-user-drag:none;-webkit-touch-callout:none}
 canvas#bg{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 #prelude{position:absolute;left:50%;bottom:28px;translate:-50% 0;z-index:9;width:min(980px,92%);box-sizing:border-box;padding:22px 28px 18px;border-radius:12px;background:linear-gradient(#20262df2,#13171bf2);border:1px solid #5b5446;box-shadow:0 24px 60px #000c;display:flex;flex-direction:column;gap:12px}#prelude .pl-lines{display:flex;flex-direction:column;gap:8px;font-family:var(--f-serif);font-size:20px;line-height:1.7;word-break:keep-all}#prelude .pl-lines p{margin:0;animation:tin .35s ease-out}#prelude .pl-say{color:#f0a493;font-family:var(--f-display);font-size:24px}#prelude .btn-main{align-self:flex-end}.port #prelude{bottom:40px}.port #prelude .pl-lines{font-size:24px}
 .restscene{display:block;width:100%;height:auto;border-radius:10px;box-shadow:inset 0 0 0 1px #ffffff14}.rs-stand{display:none}.restscene.standing .rs-sit{display:none}.restscene.standing .rs-stand{display:inline}.rs-fire .f1{animation:rsf .5s ease-in-out infinite alternate;transform-origin:50% 100%;transform-box:fill-box}.rs-fire .f2{animation:rsf .37s ease-in-out infinite alternate-reverse;transform-origin:50% 100%;transform-box:fill-box}@keyframes rsf{to{transform:scaleY(.82) scaleX(1.06)}}.rs-glow{animation:rsg 1.4s ease-in-out infinite alternate}@keyframes rsg{to{opacity:.75}}.rs-smoke{opacity:0;transition:opacity 1.2s}.rs-fire,.rs-glow{transition:opacity 1s}.restscene.out .rs-fire,.restscene.out .rs-glow{opacity:0}.restscene.out .rs-smoke{opacity:.5}.restchat{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto;font-family:var(--f-serif);font-size:18px;line-height:1.65;word-break:keep-all}.restchat p{margin:0;animation:tin .35s ease-out}.restchat b{font-family:var(--f-ui);font-size:13px;color:var(--bone-dim);margin-right:10px;font-weight:700}.restchat .me b{color:var(--brass-hi)}.restchat .note{color:var(--bone-dim);font-style:italic}.port .restchat{font-size:22px;max-height:420px}@media (prefers-reduced-motion:reduce){.rs-fire .f1,.rs-fire .f2,.rs-glow{animation:none}}
+#knightFig{position:absolute;pointer-events:none;z-index:1}#knightFig .kn-art{position:absolute;inset:0;filter:grayscale(1) brightness(1.55) contrast(.95) drop-shadow(0 0 14px #dfe6ee55);transform-origin:50% 100%}#knightFig .kn-art svg{width:100%;height:100%;display:block}#knightFig.in .kn-art{animation:knIn .7s ease-out both}@keyframes knIn{from{opacity:0;transform:translateY(24px) scale(.94)}}#knightFig .kn-art.hit{animation:hit .3s}#knightFig.dead{opacity:.18;transition:opacity .8s}#knightFig .kn-plate{position:absolute;left:50%;bottom:100%;translate:-50% -6px;width:max(150px,90%);text-align:center}#knightFig .kn-plate b{display:block;font-family:var(--f-display);font-weight:400;font-size:18px;color:#dfe6ee;text-shadow:0 2px 6px #000}#knightFig .kn-bar{position:relative;display:block;height:12px;border-radius:3px;background:#0b0d10;box-shadow:inset 0 0 0 1px #ffffff1a;overflow:hidden;margin-top:3px}#knightFig .kn-bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#cfd8e2,#7c8792)}#knightFig .kn-bar em{position:relative;font-style:normal;font-size:10.5px;font-weight:700;line-height:12px;color:#0d1013}.port #knightFig .kn-plate b{font-size:21px}
 #introFilm{position:absolute;inset:0;z-index:30;background:#08090a;display:grid;place-items:center;transition:opacity .5s}#introFilm canvas{display:block;width:100%;height:auto;max-height:100%}#introFilm.out{opacity:0}#ifSkip{position:absolute;right:24px;bottom:22px;z-index:2;font-size:15px;color:var(--bone-dim);padding:6px 14px;border-radius:6px;background:rgba(14,17,20,.6);border:1px solid #3b434d;pointer-events:none}.port #ifSkip{font-size:19px}
 
 button{font-family:var(--f-ui);color:var(--bone);cursor:pointer}
@@ -862,6 +863,7 @@ button:focus-visible{outline:3px solid var(--brass-hi);outline-offset:3px}
   <canvas id="bg" width="1600" height="900"></canvas>
   <div id="scene">
     <div id="foefigs" hidden></div>
+    <div id="knightFig" hidden><div class="kn-art"></div><div class="kn-plate"><b>은빛 기사</b><span class="kn-bar"><i></i><em></em></span></div></div>
     <div id="enemy" hidden>
       <div id="intent"></div>
       <div id="eart"></div>
@@ -1270,12 +1272,12 @@ function dainP3(kind,loss){
 const destroyBuild=()=>{const r=S.run;return !!(r&&(r.mode==='dain'||r.mode==='surt'))};
 function summonKnight(pct){
   const E=S.C.E,m=Math.max(1,Math.round(E.maxHp*pct));E.kn={hp:m,max:m,hurt:0,blocked:0};
-  fxAt('enemy','은빛 기사 소환','info');clog(`은빛 기사 소환 · 체력 ${m} — 살아 있는 동안 보스 대신 피해를 받음`,'e');renderCombat();
+  fxAt('enemy','은빛 기사 소환','info');renderKnight();clog(`은빛 기사 소환 · 체력 ${m} — 살아 있는 동안 보스 대신 피해를 받음`,'e');renderCombat();
 }
 function knightTake(d){
   const E=S.C.E,k=E.kn;if(!k||k.hp<=0||d<=0)return;
   if(!k.blocked){k.blocked=1;say(BOSS_LINES.knightStop)}
-  k.hp=Math.max(0,k.hp-d);fxAt('enemy',`은빛 기사 -${d}`,'info');clog(`은빛 기사가 대신 받음 -${d} (남은 체력 ${k.hp})`,'e');
+  k.hp=Math.max(0,k.hp-d);fxAt('enemy',`은빛 기사 -${d}`,'info');knightHitAnim();renderKnight();clog(`은빛 기사가 대신 받음 -${d} (남은 체력 ${k.hp})`,'e');
   if(k.hp<=0){say(BOSS_LINES.knightDead);clog('은빛 기사가 쓰러졌다','e')}
   else if(!k.hurt&&k.hp<=k.max*.3){k.hurt=1;say(BOSS_LINES.knightHurt)}
 }
@@ -4094,6 +4096,7 @@ function showTitle(o={}){setTimeout(guideShow,0);
 }
 /* ================= 패치 내역 (v1부터 통산 번호) ================= */
 const PATCH=[
+  ['V32.20.2.6','10/31','은빛 기사가 소환돼도 화면에 보이지 않던 문제 — 보스 옆에 은빛 기사 그림과 체력 막대가 나타나고, 대신 피해를 받을 때 흔들리며, 쓰러지면 흐려짐'],
   ['V32.20.2.5','10/31','타이틀 메뉴 배치 — 메뉴를 화면 아래에 붙여 위로 쌓이게 바꿔, 이어하기가 있어도 설정까지 한 화면에 보임 (버튼 간격 조금 줄임)'],
   ['V32.20.1.5','10/31','인트로 영상(세상은 멸망했다 … 푸른 세상이 보고 싶다, 건너뛰기 가능) 뒤 타이틀. 튜토리얼 첫 전투 도입(문 두드리는 소리 · 카드 자리의 글 상자 · 조악한 철제 검을 본 성직자의 역정)과 4·8·9단계 성직자 대사. 휴식 화면에 모닥불가의 사람과 주인공, 30초 동안 아무것도 누르지 않으면 이스터에그. 궁니르는 조각 9개를 가진 채 특수 대장장이를 만나면 완성(오딘 신화 빌드). 순수유물주의자 페이즈는 체력이 1 이하로 떨어지면 턴 종료 후 바뀜 — 페이즈 2는 은빛 기사가 보스 대신 피해를 받음, 페이즈 3은 멸망 빌드일 때만'],
   ['V31.19.5','10/31','직접 저장 — 메뉴의 저장하기로 원하는 칸에 지금 상태를 저장(쯔꾸르처럼 같은 이야기를 여러 칸에), 직접 저장한 칸은 자동 저장이 덮어쓰지 않음, 불러오면 그 시점부터 이어 감. 저장 기록 10 → 20칸, 칸마다 자동 저장 · 직접 저장 표시. 중단하기는 자동 저장 기록만 지움'],
@@ -4443,7 +4446,7 @@ function renderTop(){
       <div class="plist">${r.traits.map(k=>`<div><b>${PTRAIT[k].n}</b>${PTRAIT[k].t}</div>`).join('')}</div></div>`;$('#mClose').onclick=closeModal};
 }
 function showCombatUI(){$('#cui').hidden=false;$('#enemy').hidden=false;$('#enemy').className='';positionScene()}
-function hideCombatUI(){$('#foebar').hidden=true;{const bx=$('#foefigs');if(bx){bx.hidden=true;bx.innerHTML=''}const o=L[S.orient];if(o.ex0!=null){o.ex=o.ex0;o.ew=o.ew0;o.eh=o.eh0}}const df=$('#dfocus');if(df)df.hidden=true;$('#tut').hidden=true;stage.removeAttribute('data-tut');$('#cui').hidden=true;$('#enemy').hidden=true;$('#hand').innerHTML='';handEls.clear();hideSpeech();$('#prompt').hidden=true}
+function hideCombatUI(){{const kf=$('#knightFig');if(kf)kf.hidden=true}$('#foebar').hidden=true;{const bx=$('#foefigs');if(bx){bx.hidden=true;bx.innerHTML=''}const o=L[S.orient];if(o.ex0!=null){o.ex=o.ex0;o.ew=o.ew0;o.eh=o.eh0}}const df=$('#dfocus');if(df)df.hidden=true;$('#tut').hidden=true;stage.removeAttribute('data-tut');$('#cui').hidden=true;$('#enemy').hidden=true;$('#hand').innerHTML='';handEls.clear();hideSpeech();$('#prompt').hidden=true}
 const EFEET0={land:L.land.efeet,port:L.port.efeet};
 function positionScene(){
   const o=L[S.orient],en=$('#enemy');
@@ -4477,8 +4480,21 @@ function intentHTML(){
   if(a.strip)v+=`<em>방어도 제거</em>`;
   return`<div class="iv ${cls}">${ic}${v}</div>${dz?`<div class="idice">${dz}</div>`:''}<div class="iname">${C.cancelNext?'<s>':''}${E.intent}${C.cancelNext?'</s> — 취소됨':''}</div>`;
 }
+/* V32.20.2.6 은빛 기사 그림 — 보스 옆에 서서 보스 대신 피해를 받음 */
+function renderKnight(){
+  const kf=$('#knightFig');if(!kf)return;const C=S.C,E=C&&C.E;
+  const k=E&&E.boss&&S.screen==='combat'&&!C.over?E.kn:null;
+  if(!k){kf.hidden=true;kf.className='';return}
+  const o=L[S.orient],w=o.ew*.62,h=o.eh*.72,land=S.orient==='land';
+  kf.style.width=w+'px';kf.style.height=h+'px';kf.style.left=(o.ex-o.ew*(land?.78:.62)-w/2)+'px';kf.style.top=(o.efeet+16-h)+'px';
+  const art=kf.querySelector('.kn-art');if(!art.dataset.k){art.dataset.k=1;art.innerHTML=ENEMY_SVG.inquisitor||''}
+  kf.querySelector('.kn-bar i').style.width=clamp(k.hp/k.max*100,0,100)+'%';kf.querySelector('.kn-bar em').textContent=`${k.hp} / ${k.max}`;
+  if(kf.hidden){kf.hidden=false;kf.className='in'}
+  kf.classList.toggle('dead',k.hp<=0);
+}
+function knightHitAnim(){const a=$('#knightFig .kn-art');if(!a||REDUCED)return;a.classList.remove('hit');void a.offsetWidth;a.classList.add('hit')}
 function renderEnemy(){
-  const C=S.C,E=C.E;
+  const C=S.C,E=C.E;renderKnight();
   const art=$('#eart');
   if(art.dataset.k!==E.key){art.dataset.k=E.key;art.classList.toggle('still',false);art.innerHTML=false?`<div class="bwrap"><img class="bbody" alt="${E.name}" src="${BISHOP_BODY}"><img class="bface" alt="" src="${BISHOP_FACE.neutral}" data-f="neutral"></div>`:ENEMY_IMG[E.key]?`<img alt="${E.name}" src="${ENEMY_IMG[E.key]}">`:(ENEMY_SVG[ENEMY[E.key].art]||a2SVG(ENEMY[E.key].art))}
   bishopFace();
